@@ -31,8 +31,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        //  myBody = this.rigidbody2D;//Unity 4.6-
-        //myBody = this.GetComponent<Rigidbody2D>();//Unity 5+
+        myBody = this.GetComponent<Rigidbody2D>();//Unity 5+
         myTrans = this.transform;
         //tagGround = GameObject.Find(this.name + "/tag_ground").transform;
     }
@@ -56,15 +55,12 @@ public class PlayerController : MonoBehaviour
              Mathf.Clamp(myBody.position.y, boundary.yMin, boundary.yMax)
          );
 
-        GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
+        //myBody.GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
 
     }
 
     public void Move(float horizonalInput)
     {
-        if (!canMoveInAir && !isGrounded)
-            return;
-
         Vector2 moveVel = myBody.velocity;
         moveVel.x = horizonalInput * speed;
         myBody.velocity = moveVel;
@@ -75,8 +71,17 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
             myBody.velocity += jumpVelocity * Vector2.up;
     }
-
+    /*
     public void StartMoving(float horizonalInput)
     {
         hInput = horizonalInput;
     }
+    */
+    public void shoot()
+    {
+        //nextFire = Time.time = fireRate;
+        //GameObject clone =
+        Instantiate(shot, shotSpawn.position, shotSpawn.rotation);// as GameObject;
+    }
+    
+}
