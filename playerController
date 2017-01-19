@@ -1,0 +1,106 @@
+/*
+shout out to Devin Curry for writing most of this code.  I just modified it.  
+He said it was ok to use this code.
+*/
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+[System.Serializable]
+public class Boundary
+{
+    public float xMin, xMax, yMin, yMax;
+}
+
+public class PlayerController : MonoBehaviour
+{
+    public float speed = 10, jumpVelocity = 10;
+    
+    Transform myTrans, tagGround;
+    Rigidbody2D myBody;
+    bool isGrounded = false;
+    
+    public Boundary boundary;
+    AudioSource bulletSound;
+    public AudioClip impact;
+
+    public GameObject shot;
+    public Transform shotSpawn;
+    public float fireRate;
+    private float nextFire;
+
+    public GUIText scoreText;
+    private int score;
+
+
+
+    void Start()
+    {
+        myBody = this.GetComponent<Rigidbody2D>();//Unity 5+
+        bulletSound = GetComponent<AudioSource>();//Unity 5+
+        myTrans = this.transform;
+        
+        
+        
+    }
+
+
+  
+
+
+    void FixedUpdate()
+    {/*
+        isGrounded = Physics2D.Linecast(myTrans.position, tagGround.position, playerMask);
+
+#if !UNITY_ANDROID && !UNITY_IPHONE && !UNITY_BLACKBERRY && !UNITY_WINRT || UNITY_EDITOR
+        Move(Input.GetAxisRaw("Horizontal"));
+        if (Input.GetButtonDown("Jump"))
+            Jump();
+#else
+  Move (hInput);
+#endif
+*/
+        myBody.position = new Vector3
+         (
+             Mathf.Clamp(myBody.position.x, boundary.xMin, boundary.xMax),
+             0.0F,
+             Mathf.Clamp(myBody.position.y, boundary.yMin, boundary.yMax)
+         );
+    }
+
+    public void Move(float horizonalInput)
+    {
+        Vector2 moveVel = myBody.velocity;
+        moveVel.x = horizonalInput * speed;
+        myBody.velocity = moveVel;
+    }
+
+    public void Jump()
+    {
+        if (isGrounded)
+            myBody.velocity += jumpVelocity * Vector2.up;
+    }
+  
+    public void shoot()
+    {
+        nextFire = Time.time * fireRate;
+        
+        Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+        bulletSound.PlayOneShot(impact, 0.7F);
+        //Destroy(shot, 5.0f);
+    }
+
+
+
+    void SetScoreText()
+    {
+        scoreText.text = "Score: " + score.ToString();
+    }
+
+   
+    
+
+}
