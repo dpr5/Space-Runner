@@ -1,0 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+public class Health : MonoBehaviour {
+
+	
+	public Text healthText;
+	int damage = 10;
+	private int health = 50;
+
+	public Text scoreText;
+	public int score;
+
+
+	// Use this for initialization
+	void Start () {
+		//health = 50;
+		//healthText.text = "Health: " + health.ToString();
+	}
+
+	// void OnTriggerEnter2D(Collider2D other)
+	// {
+	//   if (other.gameObject.tag == "Asteroid")
+	//   {
+	//       health -= damage;
+	//   }
+	//  }
+
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.tag == "Asteroid")
+		{
+			//HeartSprites.Remove(Sprite);
+		}
+	}
+
+}
