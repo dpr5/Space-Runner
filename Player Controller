@@ -1,11 +1,7 @@
-/*
-shout out to Devin Curry for writing most of this code.  I just modified it.  
-He said it was ok to use this code.
-*/
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 [System.Serializable]
@@ -16,47 +12,45 @@ public class Boundary
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 10, jumpVelocity = 10;
-    public LayerMask playerMask;
-    public bool canMoveInAir = true;
+    public float speed = 10;
+    
     Transform myTrans, tagGround;
     Rigidbody2D myBody;
-    bool isGrounded = false;
-    float hInput = 0;
-    public float tilt;
+    
+    
     public Boundary boundary;
+    AudioSource bulletSound;
+    public AudioClip impact;
 
     public GameObject shot;
     public Transform shotSpawn;
+    public float fireRate;
+    private float nextFire;
+
+    public Text Health;
+    private int health;
+
+    public GameObject explosion;
+
+
 
     void Start()
     {
         myBody = this.GetComponent<Rigidbody2D>();//Unity 5+
+        bulletSound = GetComponent<AudioSource>();//Unity 5+
         myTrans = this.transform;
-        //tagGround = GameObject.Find(this.name + "/tag_ground").transform;
+        health = 3; 
     }
 
-    void FixedUpdate()
-    {/*
-        isGrounded = Physics2D.Linecast(myTrans.position, tagGround.position, playerMask);
 
-#if !UNITY_ANDROID && !UNITY_IPHONE && !UNITY_BLACKBERRY && !UNITY_WINRT || UNITY_EDITOR
-        Move(Input.GetAxisRaw("Horizontal"));
-        if (Input.GetButtonDown("Jump"))
-            Jump();
-#else
-  Move (hInput);
-#endif
-*/
+    void FixedUpdate()
+    {
         myBody.position = new Vector3
          (
              Mathf.Clamp(myBody.position.x, boundary.xMin, boundary.xMax),
              0.0F,
              Mathf.Clamp(myBody.position.y, boundary.yMin, boundary.yMax)
          );
-
-        //myBody.GetComponent<Rigidbody>().rotation = Quaternion.Euler(0.0f, 0.0f, GetComponent<Rigidbody>().velocity.x * -tilt);
-
     }
 
     public void Move(float horizonalInput)
@@ -65,23 +59,27 @@ public class PlayerController : MonoBehaviour
         moveVel.x = horizonalInput * speed;
         myBody.velocity = moveVel;
     }
-
-    public void Jump()
-    {
-        if (isGrounded)
-            myBody.velocity += jumpVelocity * Vector2.up;
-    }
-    /*
-    public void StartMoving(float horizonalInput)
-    {
-        hInput = horizonalInput;
-    }
-    */
+ 
     public void shoot()
     {
-        //nextFire = Time.time = fireRate;
-        //GameObject clone =
-        Instantiate(shot, shotSpawn.position, shotSpawn.rotation);// as GameObject;
+        nextFire = Time.time * fireRate;        
+        Instantiate(shot, shotSpawn.position, shotSpawn.rotation);
+        bulletSound.PlayOneShot(impact, 0.7F);
     }
-    
+
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Asteroid")
+        {
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+            Instantiate(explosion, transform.position, transform.rotation);
+            
+        }
+    }
+
+
+
 }
