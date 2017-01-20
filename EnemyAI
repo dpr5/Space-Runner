@@ -1,0 +1,99 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+[System.Serializable]
+public class BoundaryEnemy
+{
+    public float xMin, xMax, yMin, yMax;
+}
+
+public class EnemyAI : MonoBehaviour
+{
+
+
+    public BoundaryEnemy boundary;
+    Rigidbody2D rb;
+    public float speed;
+    public int destroyTime = 2;
+
+    public GameObject bolt;
+    private int health;
+    public Transform shotSpawn1;
+    public Transform shotSpawn2;
+
+    public int enemyHealth = 100;
+    private int damage;
+
+    public Vector2 Target;
+    public float timer;
+    public int newtarget;
+
+
+
+    // Use this for initialization
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        rb.velocity = transform.up * speed;
+
+    }
+
+    void FixedUpdate()
+    {
+        rb.position = new Vector3
+         (
+             Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
+             //0.0F,
+             Mathf.Clamp(rb.position.y, boundary.yMin, boundary.yMax)
+         );
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        timer += Time.deltaTime;
+
+        if(timer >= newtarget)
+        {
+            newTarget();
+            timer = 0;
+        }
+
+        int value = Random.Range(0, 40);
+        if (value == 1)
+        {
+            Instantiate(bolt, shotSpawn1.position, shotSpawn1.rotation);
+            Instantiate(bolt, shotSpawn2.position, shotSpawn2.rotation);
+        }
+        if (value == 12)
+        {
+            rb.velocity = transform.right * speed;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "bolt")
+        {
+            enemyHealth = enemyHealth - damage;
+            Destroy(other.gameObject);
+        }
+        if (enemyHealth == 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    void newTarget()
+    {
+        float myX = gameObject.transform.position.x;
+
+        float xPos = myX + Random.Range(myX + 100, myX - 100);
+
+        Target = new Vector2(xPos, gameObject.transform.position.y);
+    }
+  
+}
+
