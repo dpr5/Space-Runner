@@ -1,7 +1,4 @@
-/*
-shout out to Devin Curry for writing most of this code.  I just modified it.  
-He said it was ok to use this code.
-*/
+
 
 using System.Collections;
 using System.Collections.Generic;
